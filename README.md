@@ -25,6 +25,7 @@ pipeline/sync.py             Orchestrator plus CLI
 tests/test_normalize.py      Every messy format, pinned
 tests/test_idempotency.py    Double sync, in place updates, quality gate behavior
 scripts/demo.sh              Start the mock API, sync twice, run the tests
+dashboard/                 Next.js dashboard: sync run history, quality gates, orders
 ```
 
 ## Quickstart
@@ -42,6 +43,22 @@ PYTHONPATH=. .venv/bin/python -m pipeline.sync --base-url http://127.0.0.1:8000 
 PYTHONPATH=. .venv/bin/python -m pipeline.sync --base-url http://127.0.0.1:8000 --db orders.db --dry-run
 PYTHONPATH=. .venv/bin/python -m pytest -q tests/
 ```
+
+## Dashboard
+
+`dashboard/` is a small Next.js app that reads the same SQLite database the sync writes. It shows three things: sync run history (fetched, new rows, quality verdict per run), the per-check quality gate results behind each run, and a searchable orders table.
+
+Every sync records a row in the `sync_runs` table (timestamp, orders fetched, new rows, quality pass/fail, per-check results as JSON), including dry runs and failed gates, so the dashboard always tells the truth about what happened.
+
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+Run the pipeline first (`bash scripts/demo.sh` from the repo root) so there is data to look at. The dashboard defaults to `../demo.db`; set `SYNC_DB_PATH` to point it at a different database.
+
+To host it (Vercel plus Turso), the dashboard reads `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` when they are set, and falls back to the local file otherwise. Same SQLite dialect either way, so nothing else changes. `dashboard/seed.sql` is a snapshot of a demo run; the build seeds the hosted database from it automatically on first deploy (skipped when data already exists).
 
 ## Design decisions worth explaining
 
