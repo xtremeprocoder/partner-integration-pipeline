@@ -71,31 +71,39 @@ a:hover {
   padding: 0 28px;
 }
 
-/* Header */
+/* Shell: Claude-style left sidebar */
 
-.site-header {
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+.shell {
+  display: flex;
+  min-height: 100vh;
 }
 
-.header-inner {
+.sidebar {
+  width: 264px;
+  flex: 0 0 264px;
+  background: #efe8d9;
+  border-right: 1px solid var(--border);
+  padding: 28px 20px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  flex-direction: column;
+  gap: 28px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
-.brand {
+.sidebar .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
+  line-height: 1.25;
   color: var(--ink);
+  padding: 0 10px;
 }
 
-.brand:hover {
+.sidebar .brand:hover {
   text-decoration: none;
 }
 
@@ -105,21 +113,75 @@ a:hover {
   border-radius: 50%;
   background: var(--accent);
   display: inline-block;
+  flex: 0 0 auto;
 }
 
-.site-header nav {
+.sidebar nav {
   display: flex;
-  gap: 22px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.site-header nav a {
+.sidebar nav a {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 10px;
 }
 
-.site-header nav a:hover,
-.site-header nav a.active {
+.sidebar nav a:hover {
+  text-decoration: none;
+  background: rgba(217, 119, 87, 0.08);
   color: var(--ink);
+}
+
+.sidebar nav a.active {
+  background: rgba(217, 119, 87, 0.14);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.sidebar-note {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: var(--faint);
+  padding: 0 10px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content .site-footer {
+  margin-top: auto;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: auto;
+    flex: none;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 18px;
+    gap: 18px;
+  }
+
+  .sidebar nav {
+    flex-direction: row;
+  }
+
+  .sidebar-note {
+    display: none;
+  }
 }
 
 /* Page */
