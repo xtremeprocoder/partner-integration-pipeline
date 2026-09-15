@@ -15,10 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Sidebar />
           <div className="content">
             <main className="wrap page">{children}</main>
-            <footer className="wrap site-footer">
-              Reads the same SQLite database the sync pipeline writes. Set{" "}
-              <span className="mono">SYNC_DB_PATH</span> to point it at a different database.
-            </footer>
           </div>
         </div>
       </body>

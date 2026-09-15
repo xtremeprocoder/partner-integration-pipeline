@@ -83,13 +83,51 @@ a:hover {
   flex: 0 0 264px;
   background: #efe8d9;
   border-right: 1px solid var(--border);
-  padding: 28px 20px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
   position: sticky;
   top: 0;
   height: 100vh;
+  transition: width 0.22s ease, flex-basis 0.22s ease;
+}
+
+.sidebar.collapsed {
+  width: 76px;
+  flex-basis: 76px;
+  padding: 20px 14px;
+  align-items: center;
+}
+
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.sidebar.collapsed .sidebar-top {
+  justify-content: center;
+}
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(217, 119, 87, 0.1);
+  color: var(--ink);
 }
 
 .sidebar .brand {
@@ -100,7 +138,8 @@ a:hover {
   font-size: 1.05rem;
   line-height: 1.25;
   color: var(--ink);
-  padding: 0 10px;
+  padding: 0 4px;
+  white-space: nowrap;
 }
 
 .sidebar .brand:hover {
@@ -120,13 +159,27 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 100%;
 }
 
 .sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: var(--muted);
   font-size: 0.95rem;
   padding: 10px 12px;
   border-radius: 10px;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed nav a {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.sidebar nav a svg {
+  flex: 0 0 auto;
 }
 
 .sidebar nav a:hover {
@@ -164,19 +217,33 @@ a:hover {
     flex-direction: column;
   }
 
-  .sidebar {
+  .sidebar,
+  .sidebar.collapsed {
     width: auto;
     flex: none;
     height: auto;
     position: static;
     flex-direction: row;
     align-items: center;
-    padding: 14px 18px;
-    gap: 18px;
+    padding: 12px 16px;
+    gap: 14px;
+  }
+
+  .sidebar .sidebar-top {
+    min-height: 0;
+  }
+
+  .sidebar-toggle {
+    display: none;
   }
 
   .sidebar nav {
     flex-direction: row;
+    width: auto;
+  }
+
+  .sidebar.collapsed nav a {
+    padding: 10px 12px;
   }
 
   .sidebar-note {
