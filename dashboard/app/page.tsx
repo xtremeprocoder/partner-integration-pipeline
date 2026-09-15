@@ -1,3 +1,4 @@
+import ExecuteButton from "@/components/ExecuteButton";
 import RunCard from "@/components/RunCard";
 import { dbPath, getRuns } from "@/lib/db";
 
@@ -26,11 +27,16 @@ export default async function Home() {
 
   return (
     <>
-      <h1>Sync runs</h1>
-      <p className="lede">
-        Every pipeline run, with its quality gate verdict. Click a run to see the per-check
-        results that gated the write.
-      </p>
+      <div className="page-head">
+        <div>
+          <h1>Sync runs</h1>
+          <p className="lede">
+            Every pipeline run, with its quality gate verdict. Click a run to see the per-check
+            results that gated the write.
+          </p>
+        </div>
+        <ExecuteButton />
+      </div>
 
       <div className="stats">
         <div className="stat">
