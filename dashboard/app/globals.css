@@ -81,8 +81,8 @@ a:hover {
 .sidebar {
   width: 264px;
   flex: 0 0 264px;
-  background: #efe8d9;
-  border-right: 1px solid var(--border);
+  background: #3e332a;
+  border-right: 1px solid #2c231b;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
@@ -120,14 +120,14 @@ a:hover {
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
-  color: var(--muted);
+  color: #b7a88f;
   cursor: pointer;
   flex: 0 0 auto;
 }
 
 .sidebar-toggle:hover {
-  background: rgba(217, 119, 87, 0.1);
-  color: var(--ink);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3ecdd;
 }
 
 .sidebar .brand {
@@ -137,7 +137,7 @@ a:hover {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.05rem;
   line-height: 1.25;
-  color: var(--ink);
+  color: #f3ecdd;
   padding: 0 4px;
   white-space: nowrap;
 }
@@ -166,7 +166,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--muted);
+  color: #b7a88f;
   font-size: 0.95rem;
   padding: 10px 12px;
   border-radius: 10px;
@@ -184,13 +184,13 @@ a:hover {
 
 .sidebar nav a:hover {
   text-decoration: none;
-  background: rgba(217, 119, 87, 0.08);
-  color: var(--ink);
+  background: rgba(255, 255, 255, 0.07);
+  color: #f5efe4;
 }
 
 .sidebar nav a.active {
-  background: rgba(217, 119, 87, 0.14);
-  color: var(--ink);
+  background: rgba(217, 119, 87, 0.28);
+  color: #fbf7ee;
   font-weight: 600;
 }
 
