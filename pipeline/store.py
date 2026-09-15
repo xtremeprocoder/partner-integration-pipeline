@@ -7,12 +7,14 @@ same rows, never duplicates.
 """
 from __future__ import annotations
 
+import json
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
 from .normalize import CanonicalOrder
+from .quality import CheckResult
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS orders (
@@ -26,6 +28,19 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 """
 
+_RUNS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS sync_runs (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_at         TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    orders_fetched INTEGER NOT NULL,
+    new_rows       INTEGER NOT NULL,
+    total_rows     INTEGER,
+    quality_passed INTEGER NOT NULL,
+    dry_run        INTEGER NOT NULL DEFAULT 0,
+    checks_json    TEXT NOT NULL DEFAULT '[]'
+);
+"""
+
 
 @contextmanager
 def connect(db_path: str | Path) -> Iterator[sqlite3.Connection]:
@@ -33,6 +48,7 @@ def connect(db_path: str | Path) -> Iterator[sqlite3.Connection]:
     conn.row_factory = sqlite3.Row
     try:
         conn.execute(_SCHEMA)
+        conn.execute(_RUNS_SCHEMA)
         yield conn
         conn.commit()
     finally:
@@ -63,3 +79,28 @@ def upsert_orders(conn: sqlite3.Connection, orders: list[CanonicalOrder]) -> int
 
 def count_orders(conn: sqlite3.Connection) -> int:
     return conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0]
+
+
+def record_sync_run(
+    conn: sqlite3.Connection,
+    *,
+    orders_fetched: int,
+    new_rows: int,
+    total_rows: int | None,
+    quality_passed: bool,
+    dry_run: bool,
+    checks: list[CheckResult],
+) -> int:
+    """Log one sync run for the dashboard. Returns the run id."""
+    payload = json.dumps(
+        [{"name": c.name, "passed": bool(c.passed), "detail": c.detail} for c in checks]
+    )
+    cur = conn.execute(
+        """
+        INSERT INTO sync_runs
+            (orders_fetched, new_rows, total_rows, quality_passed, dry_run, checks_json)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (orders_fetched, new_rows, total_rows, int(quality_passed), int(dry_run), payload),
+    )
+    return cur.lastrowid

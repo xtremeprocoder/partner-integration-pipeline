@@ -12,7 +12,7 @@ import sys
 from .client import PartnerAPIClient
 from .normalize import normalize_batch
 from .quality import run_quality_checks
-from .store import connect, count_orders, upsert_orders
+from .store import connect, count_orders, record_sync_run, upsert_orders
 
 
 def run_sync(base_url: str, db_path: str, *, page_size: int = 20, dry_run: bool = False) -> dict:
@@ -28,18 +28,48 @@ def run_sync(base_url: str, db_path: str, *, page_size: int = 20, dry_run: bool 
     print()
 
     if not report.passed:
+        with connect(db_path) as conn:
+            record_sync_run(
+                conn,
+                orders_fetched=len(orders),
+                new_rows=0,
+                total_rows=count_orders(conn),
+                quality_passed=False,
+                dry_run=dry_run,
+                checks=report.results,
+            )
         print("Quality gate FAILED. Nothing was written.", file=sys.stderr)
         raise SystemExit(2)
 
     if dry_run:
+        with connect(db_path) as conn:
+            record_sync_run(
+                conn,
+                orders_fetched=len(orders),
+                new_rows=0,
+                total_rows=count_orders(conn),
+                quality_passed=True,
+                dry_run=True,
+                checks=report.results,
+            )
         print(f"Dry run: would write {len(orders)} orders to {db_path}.")
         return {"fetched": len(orders), "written": 0, "total": None}
 
     with connect(db_path) as conn:
+        before = count_orders(conn)
         written = upsert_orders(conn, orders)
-        total = count_orders(conn)
-    print(f"Synced {written} orders to {db_path} ({total} total rows).")
-    return {"fetched": len(orders), "written": written, "total": total}
+        after = count_orders(conn)
+        record_sync_run(
+            conn,
+            orders_fetched=len(orders),
+            new_rows=after - before,
+            total_rows=after,
+            quality_passed=True,
+            dry_run=False,
+            checks=report.results,
+        )
+    print(f"Synced {written} orders to {db_path} ({after} total rows).")
+    return {"fetched": len(orders), "written": written, "total": after}
 
 
 def main(argv: list[str] | None = None) -> None:
